@@ -2,12 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="#00000000"
     android:orientation="vertical" >
-
+
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="match_parent"
-        android:layout_height="36dp" >
+        android:layout_height="wrap_content" >
 
         <SearchView
             android:id="@+id/searchView1"
@@ -15,33 +16,49 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.58" >
         </SearchView>
-
+
         <Button
             android:id="@+id/search"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/search" />
-    </LinearLayout>
 
+    </LinearLayout>
+
     <com.baidu.mapapi.MapView
         android:id="@+id/mapview"
         android:layout_width="fill_parent"
-        android:layout_height="362dp"
-        android:layout_weight="3.80"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
         android:clickable="true" >
+        
+        
+        
+
     </com.baidu.mapapi.MapView>
+    
+    
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+    <Button
+            android:id="@+id/location"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/earth"
+             />
 
     <RelativeLayout
         android:id="@+id/relativelayout1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/location" />
-
+        android:layout_height="40dp" 
+        android:background="@drawable/layout">
+        
+
+        
+
         <Button
             android:id="@+id/nearbysearch"
             android:layout_width="wrap_content"
@@ -49,8 +66,16 @@
             android:layout_alignBottom="@+id/location"
             android:layout_marginLeft="25dp"
             android:layout_toRightOf="@+id/location"
+            android:background="#00000000"
             android:text="@string/nearbysearch" />
-
     </RelativeLayout>
+    
+        
+
+    </LinearLayout>
+    
+    
+    
+    
 
 </LinearLayout>

@@ -33,6 +33,7 @@ public class NearbySearchActivity extends Activity{
 	private BMapManager mapmanager=null;
 	private GeoPoint myloc;
 	private ArrayList<HashMap<String, Object>> listitem;
+	private PoiResult poiresult;
 	
 	
 	public void onCreate(Bundle savedInstanceState){
@@ -41,6 +42,7 @@ public class NearbySearchActivity extends Activity{
 		
 		//获得从MyMapActivity中传递过来的mylocation对象
 		SGeoPoint p=(SGeoPoint)getIntent().getSerializableExtra("mylocation");
+		if(p!=null)
 		myloc=p.getgeopoint();
 		
 		radius=(EditText)findViewById(R.id.editText1);
@@ -60,7 +62,7 @@ public class NearbySearchActivity extends Activity{
 		//初始化mapsearch
 		mapsearch=new MapSearch(mapmanager,this);
 		listitem=new ArrayList<HashMap<String,Object>>();
-		
+		poiresult=new PoiResult();
 		
 		search.setOnClickListener(new Button.OnClickListener(){
 
@@ -76,6 +78,7 @@ public class NearbySearchActivity extends Activity{
 				
 				mapsearch.getlistener().setlistitem(listitem);
 				mapsearch.getlistener().setlistview(listview);
+				mapsearch.getlistener().setpoiresult(poiresult);
 				
 				int m=mapsearch.poiSearchNearBy(Place,myloc, Radius);
 				Log.v("nearbysearch_success", Integer.toString(m));
@@ -97,6 +100,22 @@ public class NearbySearchActivity extends Activity{
 				intent.setClass(NearbySearchActivity.this, MyMapActivity.class);
 				startActivity(intent);
 				NearbySearchActivity.this.finish();
+			}
+			
+		});
+		
+		viewinmap.setOnClickListener(new Button.OnClickListener(){
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent=new Intent();
+				Bundle bundle=new Bundle();
+				bundle.putSerializable("poiresult", poiresult);
+				intent.putExtras(bundle);
+				
+				intent.setClass(NearbySearchActivity.this, ViewInMap.class);
+				startActivity(intent);
+				//NearbySearchActivity.this.finish();
 			}
 			
 		});

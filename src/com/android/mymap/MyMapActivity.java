@@ -8,6 +8,7 @@ import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
 import com.baidu.mapapi.MKLocationManager;
+import com.baidu.mapapi.MKPoiResult;
 import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
@@ -77,7 +78,7 @@ public class MyMapActivity extends MapActivity {
 					mylocoverlay.disableCompass();
 		            mylocoverlay.disableMyLocation();
 		            enableloc=false;
-		            locbutton.setText("开启定位");
+		            //locbutton.setText("开启定位");
 				}
 				
 				else{
@@ -86,8 +87,11 @@ public class MyMapActivity extends MapActivity {
 		    	    mklocmanager.enableProvider(mklocmanager.MK_NETWORK_PROVIDER);
 					mylocoverlay.enableCompass();
 		            mylocoverlay.enableMyLocation();
+		                  
+		            //在地图覆盖物中加入我的位置覆盖物
+		            mapview.getOverlays().add(mylocoverlay);
 		            enableloc=true;
-		            locbutton.setText("关闭定位");
+		            //locbutton.setText("关闭定位");
 				}
 				
 			}
@@ -121,17 +125,15 @@ public class MyMapActivity extends MapActivity {
         //启用内置缩放控件
         mapview.setBuiltInZoomControls(true);
         //设置初始化时的地理坐标
-        GeoPoint p = new GeoPoint((int) (39.915 * 1E6),(int) (116.404 * 1E6));
+        //GeoPoint p = new GeoPoint((int) (39.915 * 1E6),(int) (116.404 * 1E6));
         //设置地图重心位置
-        mapcontroller.setCenter(p);
+        //mapcontroller.setCenter(p);
         //设置缩放
         mapcontroller.setZoom(12);
         
         
         mklocmanager=mapmanager.getLocationManager();       
-        mylocoverlay=new MyLocationOverlay(this,mapview);       
-        //在地图覆盖物中加入我的位置覆盖物
-        mapview.getOverlays().add(mylocoverlay);
+        mylocoverlay=new MyLocationOverlay(MyMapActivity.this,mapview); 
         myloclistener=new MLocListener();    
         Resources res=getResources();
         Drawable marker=res.getDrawable(R.drawable.marker);

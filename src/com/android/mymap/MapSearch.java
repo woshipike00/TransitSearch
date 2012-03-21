@@ -41,6 +41,7 @@ public class MapSearch extends MKSearch{
 		private Activity activity;
 		private ArrayList<HashMap<String, Object>> listitem;
 		private ListView listview;
+		private PoiResult poiresult;
 		
 		
 		public MapSearchListener(Activity a){
@@ -53,6 +54,10 @@ public class MapSearch extends MKSearch{
 		
 		public void setlistitem(ArrayList<HashMap<String,Object>> l){
 			listitem=l;
+		}
+		
+		public void setpoiresult(PoiResult p){
+			poiresult=p;
 		}
 
 		public void onGetAddrResult(MKAddrInfo arg0, int arg1) {
@@ -76,6 +81,7 @@ public class MapSearch extends MKSearch{
 				Log.v("mapsearch", "type_poi_list");
 				if (result==null)
 					return;
+				//获得覆盖物并动画显示到第一个覆盖物
 				PoiOverlay poioverlay=new PoiOverlay(activity, ((MyMapActivity)activity).getmapview());
 				poioverlay.setData(result.getAllPoi());
 				poioverlay.animateTo();
@@ -90,7 +96,12 @@ public class MapSearch extends MKSearch{
 				if(result==null)
 					break;
 				listitem.clear();
+				
 				ArrayList<MKPoiInfo> infolist=result.getAllPoi();
+				Log.v("SEARCH", Integer.toString(result.getAllPoi().size()));
+				//设置传递给poiresult的result参数
+				poiresult.setpoiresult(result);
+				
 				for (int i=0;i<infolist.size();i++){
 					HashMap<String,Object> map=new HashMap<String, Object>();
 					map.put("itemimage",R.drawable.yonex);
