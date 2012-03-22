@@ -39,7 +39,7 @@ public class NearbySearchActivity extends Activity{
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main1);
-		
+		//Log.v("nearbyoncreate", "nearbyoncreate");
 		//获得从MyMapActivity中传递过来的mylocation对象
 		SGeoPoint p=(SGeoPoint)getIntent().getSerializableExtra("mylocation");
 		if(p!=null)
@@ -111,11 +111,12 @@ public class NearbySearchActivity extends Activity{
 				Intent intent=new Intent();
 				Bundle bundle=new Bundle();
 				bundle.putSerializable("poiresult", poiresult);
+				bundle.putSerializable("mylocation", new SGeoPoint(myloc));
 				intent.putExtras(bundle);
 				
 				intent.setClass(NearbySearchActivity.this, ViewInMap.class);
 				startActivity(intent);
-				//NearbySearchActivity.this.finish();
+				NearbySearchActivity.this.finish();
 			}
 			
 		});

@@ -23,15 +23,15 @@
             android:layout_alignParentTop="true"
             android:text="@string/nearbyarea"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
         <EditText
             android:id="@+id/editText1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="21dp"
-            android:layout_toRightOf="@+id/textView1" >
+            android:layout_toRightOf="@+id/textView1"
+             >
 
             <requestFocus />
         </EditText>
@@ -51,6 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/editText1"
             android:layout_alignParentRight="true"
+            
             android:layout_alignTop="@+id/textView2" />
 
         <Button
@@ -60,12 +61,12 @@
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/editText2"
             android:text="@string/go" />
-
+
         <Button
             android:id="@+id/viewinmap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
+            android:layout_alignBottom="@+id/button1"
             android:layout_alignRight="@+id/textView1"
             android:layout_alignTop="@+id/button1"
             android:text="@string/viewinmap" />

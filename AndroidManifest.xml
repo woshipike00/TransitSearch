@@ -27,6 +27,8 @@
         </activity>
         <activity android:name="NearbySearchActivity"></activity>
         <activity android:name="ViewInMap"></activity>
+        <activity android:name="DriveRoute"></activity>
+        <activity android:name="RouteSearch"></activity>
     </application>
 
 </manifest>

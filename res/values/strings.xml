@@ -12,5 +12,12 @@
     <string name="go">搜索</string>
     <string name="back">返回</string>
     <string name="viewinmap">在地图中显示</string>
+    <string name="route">路径搜索</string>
+    <string name="plan">路线</string>
+    <string name="start">输入起点</string>
+    <string name="end">输入终点</string>
+    <string name="walk">步行路线</string>
+    <string name="drive">驾车路线</string>
+    <string name="bus">公交路线</string>
 
 </resources>

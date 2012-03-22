@@ -18,6 +18,7 @@ public class ViewInMap extends MapActivity{
 	private MapView mapview;
 	private Button back;
 	private PoiResult poiresult;
+	private SGeoPoint gp;
 	
 	
 	public void onCreate(Bundle saveBundle){
@@ -28,6 +29,7 @@ public class ViewInMap extends MapActivity{
 		mapview=(MapView)findViewById(R.id.mapview1);
 		back=(Button)findViewById(R.id.back1);
 		poiresult=(PoiResult)getIntent().getSerializableExtra("poiresult");
+		gp=(SGeoPoint)getIntent().getSerializableExtra("mylocation");
 		
 		PoiOverlay poioverlay=new PoiOverlay(ViewInMap.this, mapview);
 		Log.v("viewinmap", Integer.toString(poiresult.getpoilist().size()));
@@ -45,6 +47,9 @@ public class ViewInMap extends MapActivity{
 				// TODO Auto-generated method stub
 				Intent intent=new Intent();
 				intent.setClass(ViewInMap.this, NearbySearchActivity.class);
+				Bundle bundle=new Bundle();
+				bundle.putSerializable("mylocation", gp);
+				intent.putExtras(bundle);
 				startActivity(intent);
 				ViewInMap.this.finish();
 			}

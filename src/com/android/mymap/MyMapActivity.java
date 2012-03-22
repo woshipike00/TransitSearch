@@ -50,6 +50,7 @@ public class MyMapActivity extends MapActivity {
 	private SearchView searchview;
 	private Button searchbutton;
 	private Button nearbybutton;
+	private Button routebutton; 
 	
     /** Called when the activity is first created. */
     @Override
@@ -65,6 +66,7 @@ public class MyMapActivity extends MapActivity {
         searchbutton=(Button)findViewById(R.id.search);
         searchview=(SearchView)findViewById(R.id.searchView1);
         nearbybutton=(Button)findViewById(R.id.nearbysearch);
+        routebutton=(Button)findViewById(R.id.route);
         
         
         //¸ø°´Å¥ÉèÖÃ¼àÌý
@@ -115,6 +117,16 @@ public class MyMapActivity extends MapActivity {
 				intent.putExtras(bundle);
 				
 				intent.setClass(MyMapActivity.this, NearbySearchActivity.class);
+				startActivity(intent);
+				MyMapActivity.this.finish();
+			}});
+        
+        routebutton.setOnClickListener(new Button.OnClickListener(){        
+
+			public void onClick(View arg0) {
+				// TODO Auto-generated method stub
+				Intent intent=new Intent();
+				intent.setClass(MyMapActivity.this,RouteSearch.class);
 				startActivity(intent);
 				MyMapActivity.this.finish();
 			}});

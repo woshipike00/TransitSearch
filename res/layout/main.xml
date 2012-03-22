@@ -38,41 +38,41 @@
     </com.baidu.mapapi.MapView>
     
     
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
 
-    <Button
-            android:id="@+id/location"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/earth"
-             />
+    
 
     <RelativeLayout
         android:id="@+id/relativelayout1"
         android:layout_width="match_parent"
-        android:layout_height="40dp" 
-        android:background="@drawable/layout">
-        
-
-        
+        android:layout_height="40dp" >
 
         <Button
             android:id="@+id/nearbysearch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/location"
-            android:layout_marginLeft="25dp"
-            android:layout_toRightOf="@+id/location"
-            android:background="#00000000"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
             android:text="@string/nearbysearch" />
+
+        <Button
+            android:id="@+id/route"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/nearbysearch"
+            android:text="@string/route" />
+
+        <Button
+            android:id="@+id/location"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/earth" />
+
     </RelativeLayout>
     
-        
-
-    </LinearLayout>
     
     
     
