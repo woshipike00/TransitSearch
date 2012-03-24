@@ -29,6 +29,9 @@
         <activity android:name="ViewInMap"></activity>
         <activity android:name="DriveRoute"></activity>
         <activity android:name="RouteSearch"></activity>
+        <activity android:name="DriveRoute"></activity>
+        <activity android:name="DriveRouteMap"></activity>
+        <activity android:name="GetAddr"></activity>
     </application>
 
 </manifest>

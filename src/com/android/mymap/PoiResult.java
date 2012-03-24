@@ -42,6 +42,10 @@ public class PoiResult  implements Serializable{
 		
 		return temp;
 	}
+	
+	public ArrayList<mkpoiinfo> getlist(){
+		return poilist;
+	}
 }
 
 //定义mkpoiinfo实现serializable接口

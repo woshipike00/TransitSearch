@@ -27,12 +27,12 @@
             android:text="@string/plan" />
 
     </RelativeLayout>
-
+
     <RelativeLayout
         android:id="@+id/relativeLayout2"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-
+
         <Button
             android:id="@+id/button3"
             android:layout_width="wrap_content"
@@ -41,43 +41,26 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="52dp"
             android:background="@drawable/exchange" />
-
+
         <EditText
             android:id="@+id/editText1"
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="输入起点"
             android:layout_alignTop="@+id/button3"
-            android:layout_toLeftOf="@+id/button4"
-            android:layout_toRightOf="@+id/button3" >
+            android:layout_toRightOf="@+id/button3"
+            android:hint="@string/city" >
 
             <requestFocus />
         </EditText>
-
+
         <Button
             android:id="@+id/button4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/editText4"
             android:layout_alignParentRight="true"
             android:layout_alignTop="@+id/editText1"
             android:text="Button" />
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/button4"
-            android:text="Button" />
-
-        <EditText
-            android:id="@+id/editText2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/button5"
-            android:layout_alignLeft="@+id/editText1"
-            android:hint="输入终点"
-            android:layout_toLeftOf="@+id/button5" />
 
         <RadioGroup
             android:id="@+id/radioGroup1"
@@ -85,35 +68,57 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_below="@+id/button3"
-            android:layout_marginTop="50dp" >
+            android:layout_marginTop="50dp"
+            android:orientation="horizontal" >
 
             <RadioButton
-                android:id="@+id/radio0"
+                android:id="@+id/radio1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:text="@string/walk" />
-            
-            <RadioButton
-            android:id="@+id/radio1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/radioGroup1"
-            android:layout_centerHorizontal="true"
-            android:text="@string/drive" />
 
             <RadioButton
-            android:id="@+id/radio2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/radio1"
-            android:layout_alignBottom="@+id/radio1"
-            android:layout_alignParentRight="true"
-            android:text="@string/bus" />
+                android:id="@+id/radio2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/radioGroup1"
+                android:layout_toRightOf="@+id/radioGroup1"
+                android:text="@string/drive" />
 
+            <RadioButton
+                android:id="@+id/radio3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@+id/radio1"
+                android:layout_alignBottom="@+id/radio1"
+                android:layout_toRightOf="@+id/radio1"
+                android:text="@string/bus" />
         </RadioGroup>
 
-        
+        <EditText
+            android:id="@+id/editText3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/editText1"
+            android:layout_toLeftOf="@+id/button4"
+            android:hint="@string/start" />
+
+        <EditText
+            android:id="@+id/editText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/button3"
+            android:layout_alignLeft="@+id/editText1"
+            android:hint="@string/city" />
+
+        <EditText
+            android:id="@+id/editText4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/radioGroup1"
+            android:layout_toLeftOf="@+id/button4"
+            android:hint="@string/end" />
 
     </RelativeLayout>
 
