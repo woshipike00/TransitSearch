@@ -14,32 +14,29 @@ import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.PoiOverlay;
 
-public class DriveRouteMap extends MapActivity{
+public class WalkRouteMap extends MapActivity{
 	
 	
 	private BMapManager mapmanager;
 	private MapView mapview;
 	private Button back;
 	private GeoPoint startp,endp;
-	private int type;
 	private MapSearch mapsearch;
 
 
 	
 	
 	public void onCreate(Bundle saveBundle){
-		Log.v("tag", "driveroutemap");
+		Log.v("tag", "walkroutemap");
 		super.onCreate(saveBundle);
 		setContentView(R.layout.viewinmap);
 		
 		//接收driveroute传递来的参数:起点终点的坐标和路线类型
         startp=((SGeoPoint)getIntent().getSerializableExtra("startp")).getgeopoint();
         endp=((SGeoPoint)getIntent().getSerializableExtra("endp")).getgeopoint();
-        type=getIntent().getIntExtra("type", 1);
-        
         Log.v("startp", startp.toString());
         Log.v("endp", endp.toString());
-        Log.v("type", Integer.toString(type));
+
 		
 		mapmanager=((MapManagerApp)getApplication()).getmapmanager();
 		super.initMapActivity(mapmanager);
@@ -55,41 +52,22 @@ public class DriveRouteMap extends MapActivity{
 		startnode.pt=startp;
 		endnode.pt=endp;
 		
-        //根据路线类型显示不同地图
-		switch(type){
-		case 1:
-			Log.v("driveroutemap", "type==1");
-			mapsearch.setDrivingPolicy(MKSearch.ECAR_DIS_FIRST);
-			
-			break;
-		case 2:
-			Log.v("driveroutemap", "type==2");
-			mapsearch.setDrivingPolicy(MKSearch.ECAR_FEE_FIRST);
-			break;
-		case 3:
-			Log.v("driveroutemap", "type==3");
-			mapsearch.setDrivingPolicy(MKSearch.ECAR_TIME_FIRST);
-			break;
-			
-		}
-		
-		//Log.v("driveroutemap", "search");
 		mapmanager.start();
-		mapsearch.drivingSearch(null, startnode, null, endnode);
+		mapsearch.getlistener().settag(1);
+		mapsearch.walkingSearch(null, startnode, null, endnode);
 		
 		back.setOnClickListener(new Button.OnClickListener(){
 
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent=new Intent();
-				intent.setClass(DriveRouteMap.this, DriveRoute.class);
+				intent.setClass(WalkRouteMap.this, Walkroute.class);
 				Bundle bundle=new Bundle();
 				bundle.putSerializable("startp", new SGeoPoint(startp));
 				bundle.putSerializable("endp", new SGeoPoint(endp));
-				bundle.putInt("type", type);
 				intent.putExtras(bundle);
 				startActivity(intent);
-				DriveRouteMap.this.finish();
+				WalkRouteMap.this.finish();
 
 			}
 			
@@ -108,7 +86,9 @@ public class DriveRouteMap extends MapActivity{
     }
     
     protected void onResume(){
-    	if (mapmanager!=null){    	    
+    	Log.v("walkroutemap","onresume");
+    	if (mapmanager!=null){ 
+    		Log.v("walkroutemap", "managerstart");
     		mapmanager.start();
     	}
     		

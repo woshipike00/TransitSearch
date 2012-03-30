@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 public class RouteSearch extends Activity{
 	//路线按钮
@@ -24,7 +25,7 @@ public class RouteSearch extends Activity{
 	private Button submit;
 	private RadioGroup radiogroup;
 	private RadioButton rbutton1,rbutton2,rbutton3;
-	private int planid;
+	private int planid=1;
 	private EditText startcity;
 	private EditText start;
 	private EditText endcity;
@@ -82,13 +83,20 @@ public class RouteSearch extends Activity{
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Intent intent=new Intent();
+				Bundle bundle=new Bundle();
 				switch(planid){
+				//步行方案
 				case 1:
-					
+					//Bundle bundle=new Bundle();
+					//传递起点和终点坐标
+					bundle.putSerializable("startp", new SGeoPoint(startp));
+					bundle.putSerializable("endp", new SGeoPoint(endp));
+					intent.putExtras(bundle);
+					intent.setClass(RouteSearch.this, Walkroute.class);
 					break;
 					//驾车方案
 				case 2:
-					Bundle bundle=new Bundle();
+					//Bundle bundle=new Bundle();
 					//传递起点和终点坐标
 					bundle.putSerializable("startp", new SGeoPoint(startp));
 					bundle.putSerializable("endp", new SGeoPoint(endp));
@@ -96,6 +104,15 @@ public class RouteSearch extends Activity{
 					intent.setClass(RouteSearch.this, DriveRoute.class);
 					break;
 				case 3:
+					if(!(startcity.getText().toString().equals(endcity.getText().toString()))){
+						Toast.makeText(RouteSearch.this, "目前只支持同城市内搜索", Toast.LENGTH_LONG).show();
+						break;
+					}
+					bundle.putSerializable("startp", new SGeoPoint(startp));
+					bundle.putSerializable("endp", new SGeoPoint(endp));
+					bundle.putString("city", startcity.getText().toString());
+					intent.putExtras(bundle);
+					intent.setClass(RouteSearch.this, TransitRoute.class);
 					break;
 				
 				}

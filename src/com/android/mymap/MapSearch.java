@@ -20,12 +20,14 @@ import com.baidu.mapapi.MKPoiResult;
 import com.baidu.mapapi.MKRoute;
 import com.baidu.mapapi.MKSearch;
 import com.baidu.mapapi.MKSearchListener;
+import com.baidu.mapapi.MKTransitRoutePlan;
 import com.baidu.mapapi.MKTransitRouteResult;
 import com.baidu.mapapi.MKWalkingRouteResult;
 import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.PoiOverlay;
 import com.baidu.mapapi.RouteOverlay;
+import com.baidu.mapapi.TransitOverlay;
 
 public class MapSearch extends MKSearch{
 	private MapSearchListener mapsearchlistener;
@@ -222,14 +224,76 @@ public class MapSearch extends MKSearch{
 			
 		}
 
-		public void onGetTransitRouteResult(MKTransitRouteResult arg0, int arg1) {
+		public void onGetTransitRouteResult(MKTransitRouteResult result, int iError) {
 			// TODO Auto-generated method stub
 			Log.v("mapsearch", "onGetTransitRouteResult");
+			//Log.v("ierror", Integer.toString(iError));
+			Log.v("iError", Integer.toString(iError));
+			
+			if(result==null)
+				return;
+			//处理transitroutemap的请求
+            if (tag==0){
+            	Log.v("tag", "tag==0");
+            	TransitOverlay transitoverlay=new TransitOverlay(activity, ((TransitRouteMap)activity).getmapview());
+    			transitoverlay.setData(result.getPlan(0));
+
+    			transitoverlay.animateTo();
+    			((TransitRouteMap)activity).getmapview().getOverlays().clear();
+    			((TransitRouteMap)activity).getmapview().getOverlays().add(transitoverlay);
+            }
+            //处理driveroute发送的请求
+            else{
+            	Log.v("tag", "tag==1");
+
+            	Log.v("content", result.getPlan(0).getNumLines()+" "+result.getPlan(0).getNumRoute());
+            	MKTransitRoutePlan plan=result.getPlan(0);
+            	//for (int j=0;j<plan.getNumRoute();j++)
+            		//Log.v("route", Integer.toString(plan.getRoute(j).getDistance()));
+            	stepresult.add("步行"+plan.getRoute(0).getDistance()+"米");
+            	//公交的数据结构是route-line-route-line-...-route这样的，
+            	//，一般是取一个route，得到距离，写"步行XX米"，取到对应的line信息，写“到XX站上车，乘坐XX路， 到XX站下车”，如此这样
+            	for (int i=1;i<plan.getNumRoute();i++){
+            		stepresult.add("到"+plan.getLine(i-1).getGetOnStop().name+"站上车，乘坐"+plan.getLine(i-1).getTitle()+"路，到"+plan.getLine(i-1).getGetOffStop().name+"站下车");
+            		stepresult.add("步行"+plan.getRoute(i).getDistance()+"米");
+            	}
+            	stepresult.add("步行"+plan.getRoute(plan.getNumRoute()-1).getDistance()+"米");
+            		
+            	Message msg=handler.obtainMessage();
+            	msg.arg1=tag;
+            	handler.sendMessage(msg);
+            }
+			
 		}
 
-		public void onGetWalkingRouteResult(MKWalkingRouteResult arg0, int arg1) {
+		public void onGetWalkingRouteResult(MKWalkingRouteResult result, int iError) {
 			// TODO Auto-generated method stub
 			Log.v("mapsearch", "onGetWalkingRouteResult");
+			
+			if(result==null)
+				return;
+			
+			//处理walkroute发送的请求
+			if(tag==0){
+				MKRoute route=result.getPlan(0).getRoute(0);
+	        	for (int i=0;i<route.getNumSteps();i++)
+	        		stepresult.add(route.getStep(i).getContent());
+	        	Message msg=handler.obtainMessage();
+	        	msg.arg1=1;
+	        	handler.sendMessage(msg);
+			}
+			
+			//处理walkroutemap发送的请求
+			if(tag==1){
+            	Log.v("tag", "tag==1");
+            	RouteOverlay routeoverlay=new RouteOverlay(activity, ((WalkRouteMap)activity).getmapview());
+    			routeoverlay.setData(result.getPlan(0).getRoute(0));
+    			MKRoute r=result.getPlan(0).getRoute(0);
+    			routeoverlay.animateTo();
+    			((WalkRouteMap)activity).getmapview().getOverlays().clear();
+    			((WalkRouteMap)activity).getmapview().getOverlays().add(routeoverlay);
+			}
+			
 		}
 		
 	}

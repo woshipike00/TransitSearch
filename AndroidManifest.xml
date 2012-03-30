@@ -32,6 +32,10 @@
         <activity android:name="DriveRoute"></activity>
         <activity android:name="DriveRouteMap"></activity>
         <activity android:name="GetAddr"></activity>
+        <activity android:name="Walkroute"></activity>
+        <activity android:name="WalkRouteMap"></activity>
+        <activity android:name="TransitRoute"></activity>
+        <activity android:name="TransitRouteMap"></activity>
     </application>
 
 </manifest>
