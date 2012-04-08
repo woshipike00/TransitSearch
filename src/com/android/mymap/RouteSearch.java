@@ -23,6 +23,8 @@ public class RouteSearch extends Activity{
 	private Button route;
 	//检测起始点按钮
 	private Button submit;
+	private Button back;
+	private Button exchange;
 	private RadioGroup radiogroup;
 	private RadioButton rbutton1,rbutton2,rbutton3;
 	private int planid=1;
@@ -46,6 +48,8 @@ public class RouteSearch extends Activity{
 		
 		route=(Button)findViewById(R.id.button2);
 		submit=(Button)findViewById(R.id.button4);
+		back=(Button)findViewById(R.id.button1);
+		exchange=(Button)findViewById(R.id.button3);
 		
 		radiogroup=(RadioGroup)findViewById(R.id.radioGroup1);
 		rbutton1=(RadioButton)findViewById(R.id.radio1);
@@ -81,42 +85,52 @@ public class RouteSearch extends Activity{
 		route.setOnClickListener(new Button.OnClickListener(){
 
 			public void onClick(View v) {
+				Log.v("routesearch", "routebutton");
 				// TODO Auto-generated method stub
-				Intent intent=new Intent();
-				Bundle bundle=new Bundle();
-				switch(planid){
-				//步行方案
-				case 1:
-					//Bundle bundle=new Bundle();
-					//传递起点和终点坐标
-					bundle.putSerializable("startp", new SGeoPoint(startp));
-					bundle.putSerializable("endp", new SGeoPoint(endp));
-					intent.putExtras(bundle);
-					intent.setClass(RouteSearch.this, Walkroute.class);
-					break;
-					//驾车方案
-				case 2:
-					//Bundle bundle=new Bundle();
-					//传递起点和终点坐标
-					bundle.putSerializable("startp", new SGeoPoint(startp));
-					bundle.putSerializable("endp", new SGeoPoint(endp));
-					intent.putExtras(bundle);
-					intent.setClass(RouteSearch.this, DriveRoute.class);
-					break;
-				case 3:
-					if(!(startcity.getText().toString().equals(endcity.getText().toString()))){
-						Toast.makeText(RouteSearch.this, "目前只支持同城市内搜索", Toast.LENGTH_LONG).show();
-						break;
-					}
-					bundle.putSerializable("startp", new SGeoPoint(startp));
-					bundle.putSerializable("endp", new SGeoPoint(endp));
-					bundle.putString("city", startcity.getText().toString());
-					intent.putExtras(bundle);
-					intent.setClass(RouteSearch.this, TransitRoute.class);
-					break;
-				
+				if(startp==null || endp==null){
+					Log.v("routesearch", "p is null");
+					Toast.makeText(RouteSearch.this, "请先提交起点终点地址", Toast.LENGTH_SHORT).show();
 				}
-				startActivity(intent);
+				
+				else{
+					Intent intent=new Intent();
+					Bundle bundle=new Bundle();
+					switch(planid){
+					//步行方案
+					case 1:
+						//Bundle bundle=new Bundle();
+						//传递起点和终点坐标
+						bundle.putSerializable("startp", new SGeoPoint(startp));
+						bundle.putSerializable("endp", new SGeoPoint(endp));
+						intent.putExtras(bundle);
+						intent.setClass(RouteSearch.this, Walkroute.class);
+						break;
+						//驾车方案
+					case 2:
+						//Bundle bundle=new Bundle();
+						//传递起点和终点坐标
+						bundle.putSerializable("startp", new SGeoPoint(startp));
+						bundle.putSerializable("endp", new SGeoPoint(endp));
+						intent.putExtras(bundle);
+						intent.setClass(RouteSearch.this, DriveRoute.class);
+						break;
+					case 3:
+						if(!(startcity.getText().toString().equals(endcity.getText().toString()))){
+							Toast.makeText(RouteSearch.this, "目前只支持同城市内搜索", Toast.LENGTH_LONG).show();
+							break;
+						}
+						bundle.putSerializable("startp", new SGeoPoint(startp));
+						bundle.putSerializable("endp", new SGeoPoint(endp));
+						bundle.putString("city", startcity.getText().toString());
+						intent.putExtras(bundle);
+						intent.setClass(RouteSearch.this, TransitRoute.class);
+						break;
+					
+					}
+					startActivity(intent);
+				}
+				
+				
 				
 			}
 			
@@ -127,6 +141,9 @@ public class RouteSearch extends Activity{
 
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+				if (startcity.getText().toString().isEmpty() || start.getText().toString().isEmpty() || endcity.getText().toString().isEmpty() || end.getText().toString().isEmpty())
+					Toast.makeText(RouteSearch.this, "请将起点终点信息输入完整", Toast.LENGTH_SHORT).show();
+				else
 				//将新的线程加入handler队列中
 				handler.post(new AddrThread(1));
 				
@@ -142,6 +159,33 @@ public class RouteSearch extends Activity{
 			
 		});
 		
+		//返回
+		back.setOnClickListener(new Button.OnClickListener(){
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent=new Intent();
+				intent.setClass(RouteSearch.this, MyMapActivity.class);
+				startActivity(intent);
+			}
+			
+		});
+		
+		//交换起点终点
+		exchange.setOnClickListener(new Button.OnClickListener(){
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				String temp1=startcity.getText().toString().trim();
+				String temp2=start.getText().toString().trim();
+				startcity.setText(endcity.getText().toString().trim());
+				start.setText(end.getText().toString().trim());
+				endcity.setText(temp1);
+				end.setText(temp2);
+				
+			}
+			
+		});
 		
 	}
 	

@@ -13,16 +13,17 @@ import com.baidu.mapapi.OverlayItem;
 public class IOverlay extends ItemizedOverlay<OverlayItem>{
 	private Context context;
 	private ArrayList<OverlayItem> itemlist=new ArrayList<OverlayItem>();
-	public IOverlay(Drawable defaultmarker,Context context){
+	public IOverlay(Drawable defaultmarker,Context context,OverlayItem item){
 		super(boundCenterBottom(defaultmarker));
 		this.context=context;
 		
+		itemlist.add(item);
 		//测试用两个地理坐标点
-		GeoPoint p1 = new GeoPoint((int) (38.915 * 1E6), (int) (117.404 * 1E6));
+		/*GeoPoint p1 = new GeoPoint((int) (38.915 * 1E6), (int) (117.404 * 1E6));
         GeoPoint p2 = new GeoPoint((int) (38.1 * 1E6), (int) (116.8 * 1E6));
         
         itemlist.add(new OverlayItem(p1, "P1", "location1"));
-        itemlist.add(new OverlayItem(p2, "P2", "location2"));
+        itemlist.add(new OverlayItem(p2, "P2", "location2"));*/
 		
 		populate();
 		

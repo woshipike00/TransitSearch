@@ -36,6 +36,10 @@
         <activity android:name="WalkRouteMap"></activity>
         <activity android:name="TransitRoute"></activity>
         <activity android:name="TransitRouteMap"></activity>
+        <activity android:name="DetailedInfo"></activity>
+        <activity android:name="MyFavour"></activity>
+        <activity android:name="MyFavourMap"></activity>
+        <activity android:name="ChangeCity"></activity>
     </application>
 
 </manifest>

@@ -33,6 +33,7 @@ public class NearbySearchActivity extends Activity{
 	private BMapManager mapmanager=null;
 	private GeoPoint myloc;
 	private ArrayList<HashMap<String, Object>> listitem;
+	//private ArrayList<String> info=new ArrayList<String>();
 	private PoiResult poiresult;
 	
 	
@@ -69,26 +70,33 @@ public class NearbySearchActivity extends Activity{
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				Log.v("nearbysearch", "searchonclick");
-				int Radius=Integer.parseInt(radius.getText().toString());
-				String Place=new String(place.getText().toString());
+				if(radius.getText().toString().isEmpty() || place.getText().toString().isEmpty()){
+					Toast.makeText(NearbySearchActivity.this, "请将信息输入完整", Toast.LENGTH_SHORT).show();
+				}
 				
-				//Log.v("nearbysearch_radius", Integer.toString(Radius)+"!");
-				//Log.v("nearbysearch_place", place+"!");
-				//Log.v("nearbysearch_myloc", myloc.toString()+"!");
+				else{
+					int Radius=Integer.parseInt(radius.getText().toString());
+					String Place=new String(place.getText().toString());
+					
+					//Log.v("nearbysearch_radius", Integer.toString(Radius)+"!");
+					//Log.v("nearbysearch_place", place+"!");
+					//Log.v("nearbysearch_myloc", myloc.toString()+"!");
+					
+					mapsearch.getlistener().setlistitem(listitem);
+					mapsearch.getlistener().setlistview(listview);
+					mapsearch.getlistener().setpoiresult(poiresult);
+					
+					int m=mapsearch.poiSearchNearBy(Place,myloc, Radius);
+					Log.v("nearbysearch_success", Integer.toString(m));
+					//获得搜索到的结果
+					//poiresult=mapsearch.getresult();
+					//if (poiresult==null)
+						//Log.v("poiresult null", "poiresultisnull");
+					//Log.v("nearbysearch_poinum", Integer.toString(poiresult.getNumPois()));
+					//Log.v("nearbysearch_page", Integer.toString(poiresult.getNumPages()));
+				}
+				}
 				
-				mapsearch.getlistener().setlistitem(listitem);
-				mapsearch.getlistener().setlistview(listview);
-				mapsearch.getlistener().setpoiresult(poiresult);
-				
-				int m=mapsearch.poiSearchNearBy(Place,myloc, Radius);
-				Log.v("nearbysearch_success", Integer.toString(m));
-				//获得搜索到的结果
-				//poiresult=mapsearch.getresult();
-				//if (poiresult==null)
-					//Log.v("poiresult null", "poiresultisnull");
-				//Log.v("nearbysearch_poinum", Integer.toString(poiresult.getNumPois()));
-				//Log.v("nearbysearch_page", Integer.toString(poiresult.getNumPages()));
-			}
 			
 		});
 		
@@ -123,6 +131,14 @@ public class NearbySearchActivity extends Activity{
 		
 		//Toast.makeText(this,p.getgeopoint().toString(), Toast.LENGTH_SHORT).show();
 	}
+	
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data){  
+        switch (resultCode){  
+        case RESULT_OK:   
+        	break;
+        }  
+    } 
 	
 	protected void onPause(){
 		if(mapmanager!=null)

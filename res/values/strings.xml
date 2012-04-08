@@ -21,5 +21,16 @@
     <string name="bus">公交路线</string>
     <string name="startcity">起点城市</string>
     <string name="city">城市</string>
+    <string name="collect">收藏</string>
+    <string name="address">地址</string>
+    <string name="name">名称</string>
+    <string name="phonenum">电话</string>
+    <string name="postcode">邮编</string>
+    <string name="geo">坐标</string>
+    <string name="myfavour">收藏夹</string>
+    <string name="delete">删除</string>
+    <string name="choose">请选择城市：</string>
+    <string name="more">更多...</string>
+    <string name="submit">提交</string>
 
 </resources>

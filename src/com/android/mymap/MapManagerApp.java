@@ -11,14 +11,22 @@ import android.widget.Toast;
 public class MapManagerApp extends Application{
 	private BMapManager mapmanager=null;
     final String code="F9E8AA7849B7EFD8DC8B294B87FDF9A6931FDA7D";
+    //程序的数据库用来保存收藏的地点
+    private DataBase mydatabase=null;
 	
 	public void onCreate(){
 		Log.v("mapapp", "oncreate");
 		mapmanager=new BMapManager(this);
 		mapmanager.init(code, new MapGeneralListener());
+		mydatabase=new DataBase(getApplicationContext());
+		mydatabase.open();
 	} 
 	public BMapManager getmapmanager(){
 		return mapmanager;
+	}
+	
+	public DataBase getdatabase(){
+		return mydatabase;
 	}
 
 	private class MapGeneralListener implements MKGeneralListener{
@@ -40,7 +48,9 @@ public class MapManagerApp extends Application{
 	public void onTerminate(){
 		if (mapmanager!=null)
 			mapmanager.destroy();
+		mydatabase.close();
 		super.onTerminate();
+		
 	}
 
 }

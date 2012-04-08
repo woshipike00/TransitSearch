@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -51,6 +55,7 @@ public class MapSearch extends MKSearch{
 		private PoiResult poiresult;
 		private ArrayList<String> stepresult;
 		private RouteOverlay routeoverlay;
+		private ArrayList<String> info;
 		private Handler handler;
 		//用来区别对不同命令的响应要求
 		private int tag=0;
@@ -89,6 +94,10 @@ public class MapSearch extends MKSearch{
 			handler=h;
 		}
 		
+		public void setinfo(ArrayList<String> i){
+			info=i;
+		}
+		
 		public void onGetAddrResult(MKAddrInfo arg0, int arg1) {
 			// TODO Auto-generated method stub
 			Log.v("tag", "ongetaddrresult");
@@ -100,10 +109,15 @@ public class MapSearch extends MKSearch{
 			Log.v("tag", "ongetdrivingrouteresult");
 			//Log.v("ierror", Integer.toString(iError));
 			Log.v("iError", Integer.toString(iError));
-			
+			if(iError!=0){
+				Toast.makeText(activity, "搜索失败", Toast.LENGTH_SHORT).show();
+				return;
+			}
 			if(result==null)
 				return;
 			Log.v("tag", "result is not null");
+			
+			
 			//处理driveroutemap的请求
             if (tag==0){
             	Log.v("tag", "tag==0");
@@ -139,9 +153,14 @@ public class MapSearch extends MKSearch{
 			//Log.v("ongetpoiresult_type", Integer.toString(type));
 			
 			Log.v("mapsearch", "ongetpoiresult");
+			Log.v("ierror", Integer.toString(iError));
+			if(iError!=0){
+				Toast.makeText(activity, "搜索失败", Toast.LENGTH_SHORT).show();
+				return;
+			}
 			//用于处理routesearch发出的获取精确起点请求
 			if(tag==1){
-				if(result==null)
+				if(result==null || result.getAllPoi()==null)
 					return;
 				poiresult.setpoiresult(result);
 				//获取handler 消息池中的消息
@@ -191,7 +210,7 @@ public class MapSearch extends MKSearch{
 						break;
 					listitem.clear();
 					
-					ArrayList<MKPoiInfo> infolist=result.getAllPoi();
+					final ArrayList<MKPoiInfo> infolist=result.getAllPoi();
 					Log.v("SEARCH", Integer.toString(result.getAllPoi().size()));
 					//设置传递给poiresult的result参数
 					poiresult.setpoiresult(result);
@@ -210,6 +229,30 @@ public class MapSearch extends MKSearch{
 							new int[]{R.id.imageView1,R.id.textView1,R.id.textView2});
 					
 					listview.setAdapter(listitemadapter);
+					
+					//点击条目跳转到详细信息页面
+					listview.setOnItemClickListener(new ListView.OnItemClickListener(){
+
+						public void onItemClick(AdapterView<?> arg0, View arg1,
+								int arg2, long arg3) {
+							// TODO Auto-generated method stub
+							Intent intent=new Intent();
+							intent.setClass(activity, DetailedInfo.class);
+							Bundle bundle=new Bundle();
+							bundle.putString("address", infolist.get(arg2).address);
+							bundle.putString("city", infolist.get(arg2).city);
+							bundle.putString("name", infolist.get(arg2).name);
+							bundle.putString("phoneNum", infolist.get(arg2).phoneNum);
+							bundle.putString("postCode", infolist.get(arg2).postCode);
+							bundle.putInt("latitude", infolist.get(arg2).pt.getLatitudeE6());
+							bundle.putInt("longitude", infolist.get(arg2).pt.getLongitudeE6());
+							intent.putExtras(bundle);
+							activity.startActivityForResult(intent,1);
+							
+						}
+						
+					});
+					
 					break;
 			    //城市列表
 				case MKSearch.TYPE_CITY_LIST:
@@ -229,7 +272,10 @@ public class MapSearch extends MKSearch{
 			Log.v("mapsearch", "onGetTransitRouteResult");
 			//Log.v("ierror", Integer.toString(iError));
 			Log.v("iError", Integer.toString(iError));
-			
+			if(iError!=0){
+				Toast.makeText(activity, "搜索失败", Toast.LENGTH_SHORT).show();
+				return;
+			}
 			if(result==null)
 				return;
 			//处理transitroutemap的请求
@@ -269,7 +315,10 @@ public class MapSearch extends MKSearch{
 		public void onGetWalkingRouteResult(MKWalkingRouteResult result, int iError) {
 			// TODO Auto-generated method stub
 			Log.v("mapsearch", "onGetWalkingRouteResult");
-			
+			if(iError!=0){
+				Toast.makeText(activity, "搜索失败", Toast.LENGTH_SHORT).show();
+				return;
+			}
 			if(result==null)
 				return;
 			
