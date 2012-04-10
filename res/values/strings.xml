@@ -32,5 +32,11 @@
     <string name="choose">请选择城市：</string>
     <string name="more">更多...</string>
     <string name="submit">提交</string>
+    <string name="typeincity">输入离线地图城市：</string>
+    <string name="download">下载</string>
+    <string name="stop">暂停</string>
+    <string name="remove">删除</string>
+    <string name="traffic">显示交通路况</string>
+    <string name="satellite">显示卫星地图</string>
 
 </resources>

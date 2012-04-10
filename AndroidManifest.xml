@@ -40,6 +40,8 @@
         <activity android:name="MyFavour"></activity>
         <activity android:name="MyFavourMap"></activity>
         <activity android:name="ChangeCity"></activity>
+        <activity android:name="OfflineMap"></activity>
+        <activity android:name="Settings"></activity>
     </application>
 
 </manifest>

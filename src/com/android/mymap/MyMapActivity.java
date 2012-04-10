@@ -9,6 +9,10 @@ import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
 import com.baidu.mapapi.MKLocationManager;
+import com.baidu.mapapi.MKOLSearchRecord;
+import com.baidu.mapapi.MKOLUpdateElement;
+import com.baidu.mapapi.MKOfflineMap;
+import com.baidu.mapapi.MKOfflineMapListener;
 import com.baidu.mapapi.MKPoiResult;
 import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapController;
@@ -66,18 +70,24 @@ public class MyMapActivity extends MapActivity {
 	
     /** Called when the activity is first created. */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {  
+        super.onCreate(savedInstanceState); 
         setContentView(R.layout.main);
         //获得全局的mapmanager
         mapmanager=((MapManagerApp)getApplication()).getmapmanager();
         mydatabase=((MapManagerApp)getApplication()).getdatabase();
+        mapmanager.start();
+        super.initMapActivity(mapmanager);
+        
+
+  			
+  		
         //mydatabase.insertdata(1, "data1");
         //mydatabase.insertdata(2, "data2");
         if(getIntent().getSerializableExtra("citygeo")!=null)
         citygeo=((SGeoPoint)getIntent().getSerializableExtra("citygeo")).getgeopoint();
        
-        super.initMapActivity(mapmanager);
+       
         //初始化控件
         mapview=(MapView) findViewById(R.id.mapview);
         locbutton=(Button) findViewById(R.id.location);
@@ -87,7 +97,7 @@ public class MyMapActivity extends MapActivity {
         routebutton=(Button)findViewById(R.id.route);
         myfavour=(Button)findViewById(R.id.button1);
         //more=(Button)findViewById(R.id.button2);
-        
+        //mapview.setSatellite(true); 
           
         //给按钮设置监听
         locbutton.setOnClickListener(new Button.OnClickListener() { 
@@ -101,6 +111,7 @@ public class MyMapActivity extends MapActivity {
 		            mylocoverlay.disableMyLocation();
 		            enableloc=false;
 		            //locbutton.setText("开启定位");
+		            Toast.makeText(MyMapActivity.this, "定位已关闭", Toast.LENGTH_SHORT).show();
 				}
 				
 				else{
@@ -114,6 +125,7 @@ public class MyMapActivity extends MapActivity {
 		            mapview.getOverlays().add(mylocoverlay);
 		            enableloc=true;
 		            //locbutton.setText("关闭定位");
+		            Toast.makeText(MyMapActivity.this, "定位已开启", Toast.LENGTH_SHORT).show();
 				}
 				
 			}
@@ -137,6 +149,7 @@ public class MyMapActivity extends MapActivity {
 				// TODO Auto-generated method stub
 				Intent intent=new Intent();
 				Bundle bundle=new Bundle();
+				mygeopoint=mapview.getMapCenter();
 				//传递参数我的坐标到附近搜索
 				bundle.putSerializable("mylocation", new SGeoPoint(mygeopoint));
 				intent.putExtras(bundle);
@@ -298,24 +311,35 @@ public class MyMapActivity extends MapActivity {
 		Log.v("menu", "createmenu");
 		menu.add(0,1,1,"设置");
 		menu.add(0,2,2,"切换城市");
-		menu.add(0,3,3,"退出程序");
+		menu.add(0, 3, 3, "离线地图");
+		menu.add(0,4,4,"退出程序");
 		return true;
 	}
 	
 	
 	//添加菜单点击事件
 	public boolean onOptionsItemSelected(MenuItem menuitem){
-		switch(menuitem.getItemId()){
+		switch(menuitem.getItemId()){ 
 		case 1:
-			break;
+			Intent intent2=new Intent();
+			intent2.setClass(MyMapActivity.this, Settings.class);
+			startActivityForResult(intent2, 1);
+			break;  
 		case 2:
 			//进入切换城市页面
 			Intent intent=new Intent();
 			intent.setClass(MyMapActivity.this,ChangeCity.class);
 			startActivity(intent);
-			MyMapActivity.this.finish();
+			MyMapActivity.this.finish(); 
 		    break;
 		case 3:
+			//进入离线地图页面
+			Intent intent1=new Intent(); 
+			intent1.setClass(MyMapActivity.this,OfflineMap.class);
+			startActivity(intent1);
+			MyMapActivity.this.finish();
+		    break;
+		case 4:
 			((MapManagerApp)getApplication()).onTerminate();
 			 android.os.Process.killProcess(android.os.Process.myPid());
 			break;
@@ -323,6 +347,19 @@ public class MyMapActivity extends MapActivity {
 		return true;
 		
 	}
+	
+	//处理setting返回的结果
+	protected void onActivityResult(int requestCode, int resultCode,  
+            Intent data){  
+            switch (resultCode){  
+                 case RESULT_OK:  
+                 Bundle b = data.getExtras();
+                 mapview.setTraffic(b.getBoolean("traffic"));
+                 mapview.setSatellite(b.getBoolean("satellite"));
+                 break;
+
+        }  
+    }  
 	
 
 }

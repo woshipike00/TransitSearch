@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 public class TransitRoute extends Activity{
 	private Button viewinmap;
@@ -39,6 +40,8 @@ public class TransitRoute extends Activity{
 	private ListView listview1,listview2,listview3,listview4;
 	private Handler handler;
 	private ArrayList<String> stepresult;
+	private TextView startpoint,endpoint;
+
 	
 	protected void onCreate(Bundle savedInstanceState){
 		Log.v("tag", "transitroute");
@@ -62,6 +65,13 @@ public class TransitRoute extends Activity{
         listview2=(ListView)findViewById(R.id.tablist2);
         listview3=(ListView)findViewById(R.id.tablist3);
         listview4=(ListView)findViewById(R.id.tablist4);
+        
+        startpoint=(TextView)findViewById(R.id.textView1);
+        endpoint=(TextView)findViewById(R.id.textView2);
+        
+        //设置起点终点名称
+        startpoint.setText(getIntent().getStringExtra("startpoint"));
+        endpoint.setText(getIntent().getStringExtra("endpoint"));
         
         
         

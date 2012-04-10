@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 public class Walkroute extends Activity{
 	private Button viewinmap;
@@ -36,6 +37,8 @@ public class Walkroute extends Activity{
 	private ListView listview;
 	private Handler handler;
 	private ArrayList<String> stepresult;
+	
+	private TextView startpoint,endpoint;
 	
 	protected void onCreate(Bundle savedInstanceState){
 		Log.v("tag", "walkroute");
@@ -53,6 +56,13 @@ public class Walkroute extends Activity{
         viewinmap=(Button)findViewById(R.id.button2);
         back=(Button)findViewById(R.id.button1);
         listview=(ListView)findViewById(R.id.listView1);
+        
+        startpoint=(TextView)findViewById(R.id.textView1);
+        endpoint=(TextView)findViewById(R.id.textView2);
+        
+        //设置起点终点名称
+        startpoint.setText(getIntent().getStringExtra("startpoint"));
+        endpoint.setText(getIntent().getStringExtra("endpoint"));
         
         mapmanager=((MapManagerApp)getApplication()).getmapmanager();
         //初始化mapsearch

@@ -40,6 +40,8 @@ public class ViewInMap extends MapActivity{
 		//将上次查询的overlay清空并加入新的搜索结果overlay
 		mapview.getOverlays().clear();
 		mapview.getOverlays().add(poioverlay);
+		mapview.setBuiltInZoomControls(true);
+		mapview.getController().animateTo(poioverlay.getCenter());
 		
 		back.setOnClickListener(new Button.OnClickListener(){
 

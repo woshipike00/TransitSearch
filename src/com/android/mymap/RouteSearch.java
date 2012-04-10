@@ -42,6 +42,8 @@ public class RouteSearch extends Activity{
 	private GeoPoint startp;
 	private GeoPoint endp;
 	
+	private String startpoint,endpoint;
+	
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.routesearch);
@@ -95,6 +97,8 @@ public class RouteSearch extends Activity{
 				else{
 					Intent intent=new Intent();
 					Bundle bundle=new Bundle();
+					bundle.putString("startpoint", startpoint);
+					bundle.putString("endpoint", endpoint);
 					switch(planid){
 					//步行方案
 					case 1:
@@ -264,6 +268,8 @@ public class RouteSearch extends Activity{
             	Log.v("itemindex", Integer.toString(index));
             	//记录起点地理坐标
             	startp=poiresult.getpoilist().get(index).pt;
+            	//记录起点名称
+            	startpoint=new String(poiresult.getpoilist().get(index).name);
             	//将处理终点的线程就handler
         		handler.post(new AddrThread(2));
         	}
@@ -272,6 +278,8 @@ public class RouteSearch extends Activity{
             	Log.v("itemindex", Integer.toString(index));
             	//记录终点坐标
             	endp=poiresult1.getpoilist().get(index).pt;
+            	//记录终点名称
+            	endpoint=new String(poiresult1.getpoilist().get(index).name);
         	}
         	
         	break;
