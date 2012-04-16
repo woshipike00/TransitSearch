@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MyMapActivity!</string>
+    <string name="app_name">MyMap</string>
+    <string name="location">开启定位</string>
+    <string name="search">市内搜索</string>
+    <string name="input">输入城市名</string>
+    <string name="nearbysearch">附近搜索</string>
+    <string name="nearbyarea">附近检索范围（米）</string>
+    <string name="nearbypoi">检索内容</string>
+    <string name="go">搜索</string>
+    <string name="back">返回</string>
+    <string name="viewinmap">在地图中显示</string>
+
+</resources>

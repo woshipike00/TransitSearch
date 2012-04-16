@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, MyMapActivity!</string>
+    <string name="app_name">MyMap</string>
+    <string name="location">开启定位</string>
+    <string name="search">市内搜索</string>
+    <string name="input">输入城市名</string>
+    <string name="nearbysearch">附近搜索</string>
+    <string name="nearbyarea">附近检索范围（米）</string>
+    <string name="nearbypoi">检索内容</string>
+    <string name="go">搜索</string>
+    <string name="back">返回</string>
+    <string name="viewinmap">在地图中显示</string>
+    <string name="route">路径搜索</string>
+    <string name="plan">路线</string>
+    <string name="start">输入起点</string>
+    <string name="end">输入终点</string>
+    <string name="walk">步行路线</string>
+    <string name="drive">驾车路线</string>
+    <string name="bus">公交路线</string>
+    <string name="startcity">起点城市</string>
+    <string name="city">城市</string>
+    <string name="collect">收藏</string>
+    <string name="address">地址</string>
+    <string name="name">名称</string>
+    <string name="phonenum">电话</string>
+    <string name="postcode">邮编</string>
+    <string name="geo">坐标</string>
+    <string name="myfavour">收藏夹</string>
+    <string name="delete">删除</string>
+    <string name="choose">请选择城市：</string>
+    <string name="more">更多...</string>
+    <string name="submit">提交</string>
+    <string name="typeincity">输入离线地图城市：</string>
+    <string name="download">下载</string>
+    <string name="stop">暂停</string>
+    <string name="remove">删除</string>
+    <string name="traffic">显示交通路况</string>
+    <string name="satellite">显示卫星地图</string>
+
+</resources>
