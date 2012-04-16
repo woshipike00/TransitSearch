@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, TransitSearchActivity!</string>
+    <string name="app_name">TransitSearch</string>
+    <string name="citychange">切换城市</string>
+    <string name="transitsearch">公交线路查询</string>
+    <string name="sitesearch">公交站点查询</string>
+    <string name="list">列表</string>
+
+</resources>
