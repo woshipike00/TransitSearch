@@ -139,5 +139,98 @@ public class ObtainData {
 		
 		return type1;
 	}
+	
+	public int sitesearch(String sitename) throws ClientProtocolException, IOException{
+		this.sitename=sitename;
+		String url=null;
+		//先将中文名称转码
+		String tempname=URLEncoder.encode(sitename, "gb2312");
+		//获得完整的url
+		url=cityURL+siteURL+tempname;
+		//测试结果chrome浏览器地址栏编码为utf-8
+		url=new String(url.getBytes("gbk"),"utf-8");
+		//get请求
+		HttpGet httprequest=new HttpGet(url);
+		HttpClient httpclient=new DefaultHttpClient();
+		//获得结果
+		HttpResponse httpresponse=httpclient.execute(httprequest);
+		
+		//返回结果正确
+		if(httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
+			
+			//获取网页源码并重新编码
+			String temp=EntityUtils.toString(httpresponse.getEntity());
+			String result=new String (temp.getBytes("iso-8859-1"),"gbk");
+
+			if (result.contains("搜索") && result.contains("请输入准确站点")){
+					//搜索结果错误
+					type2=0;
+			}
+			else {
+				if(result.contains("你是不是要找"))
+					type2=2;
+				else
+					type2=1;
+			}
+
+			
+			switch(type2){
+			//无搜索结果
+			case 0:
+				break;
+			//有唯一的搜索结果
+			case 1:
+				//获得result中的各个站点
+				result=result.replaceAll("\\s", "");
+				result=result.replaceAll("<!DOCTYPEhtmlPUBLIC.*的线路","");
+				result=result.replaceAll("<divclass.*", "");
+				result=result.replaceAll("</a>", "-");
+				result=result.replaceAll("<.*?>", "");
+				String[] route=result.split("-");
+				for (int i=0;i<route.length;i++)
+					list.add(route[i]);
+				//System.out.println(result);
+				break;
+			//有多个搜索结果
+			case 2:
+				result=result.replaceAll("\\s", "");
+				result=result.replaceAll("<!DOCTYPEhtmlPUBLIC.*你是不是要找:","");
+				result=result.replaceAll("周边站点.*", "");
+				result=result.replaceAll("</a>", "-");
+				result=result.replaceAll("<.*?>", "");
+				String[] multiple=result.split("经过");
+				
+				String mainsite=multiple[1].split("-")[0];
+				String[] possites=multiple[0].split("-");
+
+				list.add(mainsite);
+				
+				//判断得到的结果有没有重复
+				if(mainsite.equals(possites[0])){
+					for (int i=1;i<possites.length;i++)
+						list.add(possites[i]);
+				}
+				else{
+					for (int i=0;i<possites.length;i++)
+						list.add(possites[i]);
+				}
+
+				//System.out.println(result);
+				break;
+				
+			}
+			
+				
+			
+		}
+		else{
+			Log.v("sitesearch","request error");
+			//System.out.println(httpresponse.getAllHeaders());
+			type2=3;
+
+		}
+		
+		return type2;
+	}
 
 }

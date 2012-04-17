@@ -50,6 +50,7 @@ public class MapSearch extends MKSearch{
 	public static class MapSearchListener implements MKSearchListener{
 		
 		private Activity activity;
+		private Handler handler;
 
 		
 		
@@ -57,13 +58,24 @@ public class MapSearch extends MKSearch{
 			activity=a;
 		}
 		
+		public void sethandler(Handler handler){
+			this.handler=handler;
+		}
 		
 		
 		public void onGetAddrResult(MKAddrInfo result, int iError) {
 			// TODO Auto-generated method stub
 			Log.v("tag", "ongetaddrresult");
 			Log.v("iError", Integer.toString(iError));
-			Log.v("result", result.strAddr);
+			//Log.v("result", result.strAddr);
+			Message msg=handler.obtainMessage();
+			msg.what=iError;
+			if(iError==0){
+				//传输坐标
+				msg.arg1=result.geoPt.getLatitudeE6();
+				msg.arg2=result.geoPt.getLongitudeE6();
+			}
+			msg.sendToTarget();
 			
 		}
 
@@ -83,10 +95,19 @@ public class MapSearch extends MKSearch{
 			Log.v("mapsearch", "ongetpoiresult");
 			Log.v("ierror", Integer.toString(iError));
 			
-			ArrayList<MKPoiInfo> list=result.getAllPoi();
+			/*ArrayList<MKPoiInfo> list=result.getAllPoi();
 			for (int i=0;i<list.size();i++){
 				Log.v("poiresult", list.get(i).name);
+			}*/
+			Message msg=handler.obtainMessage();
+			msg.what=iError;
+			if(iError==0){
+				//传输坐标
+				msg.arg1=result.getPoi(0).pt.getLatitudeE6();
+				msg.arg2=result.getPoi(0).pt.getLongitudeE6();
 			}
+			msg.sendToTarget();
+			
 			
 			
 		}

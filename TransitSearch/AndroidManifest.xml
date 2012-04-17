@@ -25,6 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="ChooseBusline"></activity>
+        <activity android:name="ViewList"></activity>
+        <activity android:name="ViewList1"></activity>
+        <activity android:name="ChooseSite"></activity>
     </application>
 
 </manifest>

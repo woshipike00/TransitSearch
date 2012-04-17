@@ -7,5 +7,9 @@
     <string name="transitsearch">公交线路查询</string>
     <string name="sitesearch">公交站点查询</string>
     <string name="list">列表</string>
+    <string name="whichbusline">你想要选择的公交线路是？</string>
+    <string name="back">返回</string>
+    <string name="busline">公交线路：</string>
+    <string name="whichsite">你想要选择的站点是？</string>
 
 </resources>
