@@ -42,7 +42,9 @@ public class TransitSearchActivity extends MapActivity {
 	private MapSearch mapsearch;
 	private myhandler handler;
 	
-	private String cityname="南京",transitname;
+	static String cityname="南京",transitname;
+	
+	static int baiduweights=1,googleweights=1,gaodeweights=1;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,7 +55,8 @@ public class TransitSearchActivity extends MapActivity {
         //mydatabase.open();
         //Log.v("database", Integer.toString(mydatabase.fetchalldata().getCount()));
         //若数据库为空则读入数据
-        if(mydatabase.fetchalldata().getCount()==0){
+        Cursor tempcursor=mydatabase.fetchalldata();
+        if(tempcursor.getCount()==0){
         	try {
         		Log.v("oncreate", "readdata");
 				mydatabase.readindata(TransitSearchActivity.this);
@@ -65,6 +68,7 @@ public class TransitSearchActivity extends MapActivity {
 				e.printStackTrace();
 			}
         }
+        tempcursor.close();
         
         //获取控件
         mapview=(MapView)findViewById(R.id.mapview);
@@ -95,7 +99,7 @@ public class TransitSearchActivity extends MapActivity {
 				// TODO Auto-generated method stub
 				String temp=citycontent.getText().toString().trim();
 				String url=null;
-				if(temp.isEmpty()){
+				if(temp.length()==0){
 					display("请输入城市");
 				}
 				else{
@@ -121,6 +125,7 @@ public class TransitSearchActivity extends MapActivity {
 						//设置城市url
 						mobtaindata.setCityURL(url);
 					}
+					cursor.close();
 				}
 	
 			}
@@ -134,7 +139,7 @@ public class TransitSearchActivity extends MapActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String temp=sitecontent.getText().toString();
-				if(temp.isEmpty() || temp.matches("\\d{1,2}") || temp.matches("\\w{1}")){
+				if(temp.length()==0 || temp.matches("\\d{1,2}") || temp.matches("\\w{1}")){
 					display("请重新输入公交站点！不能输入过简单的字符");
 				}
 				else{
@@ -157,7 +162,7 @@ public class TransitSearchActivity extends MapActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String temp=linecontent.getText().toString();
-				if(temp.isEmpty()){
+				if(temp.length()==0){
 					display("请输入公交线路！");
 				}
 				else{
@@ -363,24 +368,51 @@ public class TransitSearchActivity extends MapActivity {
     		int ierror=msg.what;
     		//搜索成功
     		if(ierror==0){
-    			Log.v("handlemsg", msg.arg1+","+msg.arg2);
-    			overlaylist.add(new OverlayItem(new GeoPoint(msg.arg1, msg.arg2), "1", "1"));
+    			Log.v("handlemsg", msg.arg1+","+msg.arg2+","+msg.obj);
+    			if(msg.arg1==3000){
+    				OverlayItem tempitem=overlaylist.get(overlaylist.size()-1);
+    				overlaylist.add(new OverlayItem(new GeoPoint(tempitem.getPoint().getLatitudeE6(), tempitem.getPoint().getLongitudeE6()), "bussite", (String)msg.obj));
+    			}
+    			
+    			else{
+    				overlaylist.add(new OverlayItem(new GeoPoint(msg.arg1, msg.arg2), "bussite", (String)msg.obj));
+    			}
+    			
     			i++;
-    			if(i<count){
-    				mapsearch.geocode(list.get(i), cityname);
+
+    			if(i<count){ 
+    				mapsearch.geocode(list.get(i), cityname);  
     			}
     			//在地图中显示覆盖物
     			if(i==count){
     				SiteOverlay siteoverlay=new SiteOverlay(getResources().getDrawable(R.drawable.marker), TransitSearchActivity.this, overlaylist);
     				mapview.getOverlays().clear();
     				mapview.getOverlays().add(siteoverlay);
-    				mapview.getController().animateTo(siteoverlay.getItem(0).getPoint());
+    				Calculate calculate=new Calculate(overlaylist,TransitSearchActivity.this);
+    				try {
+						calculate.modify();
+					} catch (ClientProtocolException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+    				for (int k=0;k<list.size();k++){
+    					Log.v("newlist:name,geo", overlaylist.get(k).getSnippet()+","+overlaylist.get(k).getPoint().getLatitudeE6()+","+overlaylist.get(k).getPoint().getLongitudeE6());
+    				}
+    				SiteOverlay siteoverlay1=new SiteOverlay(getResources().getDrawable(R.drawable.poi), TransitSearchActivity.this, overlaylist);
+    				mapview.getOverlays().add(siteoverlay1);
+    				mapview.getController().animateTo(siteoverlay1.getItem(0).getPoint());
+    				//mapview.getController().animateTo(new GeoPoint(39924664,116366873));
     			}
     		}
     		//搜索失败，重新启用市内搜索
     		else{
     			Log.v("handlemsg", "searchincity");
-    			mapsearch.poiSearchInCity(list.get(i), cityname);
+    			//Log.v("searchintcity", list.get(i)+" "+cityname);
+    			mapsearch.getlistener().setpoiname(list.get(i));
+    			mapsearch.poiSearchInCity(cityname,list.get(i));
     		}
     	}
     }

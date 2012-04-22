@@ -1,56 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
-
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="match_parent"
-        android:layout_height="36dp" >
-
-        <SearchView
-            android:id="@+id/searchView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.58" >
-        </SearchView>
-
-        <Button
-            android:id="@+id/search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/search" />
-    </LinearLayout>
-
-    <com.baidu.mapapi.MapView
-        android:id="@+id/mapview"
-        android:layout_width="fill_parent"
-        android:layout_height="362dp"
-        android:layout_weight="3.80"
-        android:clickable="true" >
-    </com.baidu.mapapi.MapView>
-
-    <RelativeLayout
-        android:id="@+id/relativelayout1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <Button
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/location" />
-
-        <Button
-            android:id="@+id/nearbysearch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/location"
-            android:layout_marginLeft="25dp"
-            android:layout_toRightOf="@+id/location"
-            android:text="@string/nearbysearch" />
-
-    </RelativeLayout>
-
-</LinearLayout>

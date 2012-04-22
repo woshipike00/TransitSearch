@@ -51,7 +51,7 @@ public class MapSearch extends MKSearch{
 		
 		private Activity activity;
 		private Handler handler;
-
+        private String poiname;
 		
 		
 		public MapSearchListener(Activity a){
@@ -60,6 +60,10 @@ public class MapSearch extends MKSearch{
 		
 		public void sethandler(Handler handler){
 			this.handler=handler;
+		}
+		
+		public void setpoiname(String poiname){
+			this.poiname=poiname;
 		}
 		
 		
@@ -74,6 +78,7 @@ public class MapSearch extends MKSearch{
 				//传输坐标
 				msg.arg1=result.geoPt.getLatitudeE6();
 				msg.arg2=result.geoPt.getLongitudeE6();
+				msg.obj=result.strAddr;
 			}
 			msg.sendToTarget();
 			
@@ -100,11 +105,19 @@ public class MapSearch extends MKSearch{
 				Log.v("poiresult", list.get(i).name);
 			}*/
 			Message msg=handler.obtainMessage();
-			msg.what=iError;
+			msg.what=iError; 
 			if(iError==0){
-				//传输坐标
-				msg.arg1=result.getPoi(0).pt.getLatitudeE6();
-				msg.arg2=result.getPoi(0).pt.getLongitudeE6();
+				if(result.getPoi(0)==null){
+					msg.arg1=3000;
+					msg.obj=poiname;
+				}
+				else{
+					//传输坐标
+					msg.arg1=result.getPoi(0).pt.getLatitudeE6();
+					msg.arg2=result.getPoi(0).pt.getLongitudeE6();
+					msg.obj=poiname;
+				}
+				
 			}
 			msg.sendToTarget();
 			

@@ -3,6 +3,7 @@ package com.TransitSearch;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import org.apache.http.HttpResponse;
@@ -12,6 +13,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+
+import com.baidu.mapapi.GeoPoint;
 
 import android.util.Log;
 
@@ -231,6 +234,94 @@ public class ObtainData {
 		}
 		
 		return type2;
+	}
+	
+	//获得谷歌对地点的经纬度解析
+	public static GeoPoint googlegeo(String address) throws ClientProtocolException, IOException{
+		String URL1="http://maps.googleapis.com/maps/api/geocode/json?address=";
+	    String URL2="&sensor=false";
+		String URL=null;
+		//google地址栏编码即为gbk
+				URL=URL1+address+URL2;
+				
+				HttpGet httprequest=new HttpGet(URL);
+				
+					
+					HttpClient httpclient=new DefaultHttpClient();
+					HttpResponse httpresponse=httpclient.execute(httprequest);
+					
+					//返回结果正确
+					if(httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
+						
+						//获取网页源码并重新编码
+						String result=EntityUtils.toString(httpresponse.getEntity());
+						
+						//若无结果，返回默认值
+						if(result.contains("ZERO_RESULTS")){
+							return new GeoPoint(32000000, 118000000);
+						}
+						
+						result=result.replaceAll("\\s", "");
+						result=result.replaceAll("\\{\"results\".*?\"location\":", "");
+						result=result.replaceAll(",\"location_type\".*", "");
+						result=result.replaceAll("[\\{\\}:\"latlng]", "");
+						//System.out.println(result);
+						String[] geo=result.split(",");
+						DecimalFormat format=new DecimalFormat("0.000000");
+						
+						String latitude=format.format(Double.parseDouble(geo[0])).replaceAll("[.]", "");
+						String longitude=format.format(Double.parseDouble(geo[1])).replaceAll("[.]", "");
+						GeoPoint geopoint=new GeoPoint(Integer.parseInt(latitude),Integer.parseInt(longitude));
+						return geopoint;
+							
+						
+					}
+					else{
+						//System.out.println(httpresponse.getStatusLine().getStatusCode());
+						Log.v("googlegeo","request error");
+						//System.out.println(httpresponse.getAllHeaders());
+						return null;
+
+					}
+	}
+	
+	//获得城市区号
+	public static String getzonenum(String cityname) throws ClientProtocolException, IOException{
+		String URL="http://www.ip138.com/post/search.asp?action=area2zone&area=";
+        String url=null;
+		
+
+		String temp=URLEncoder.encode(cityname, "gb2312");
+		URL+=temp;
+		url=new String(URL.getBytes("gbk"),"utf-8");
+
+		
+		HttpGet httprequest=new HttpGet(url);
+			
+		HttpClient httpclient=new DefaultHttpClient();
+		HttpResponse httpresponse=httpclient.execute(httprequest);
+			
+			//返回结果正确
+		if(httpresponse.getStatusLine().getStatusCode()==HttpStatus.SC_OK){
+				
+				//获取网页源码并重新编码
+			String tempresult=EntityUtils.toString(httpresponse.getEntity());
+			String result=new String (tempresult.getBytes("iso-8859-1"),"gbk");
+			result=result.replaceAll("\\s", "");
+			result=result.replaceAll("<.*?>", "");
+			result=result.replaceAll(".*邮编", "").replaceAll(".*区号：", "").replaceAll("更详细的.*", "");
+            return result;
+					
+				
+			}
+			else{
+
+				Log.v("zonenum", "request error");
+				return null;
+
+
+			}
+		
 	}
 
 }
