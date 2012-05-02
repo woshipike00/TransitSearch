@@ -1,17 +1,14 @@
 package com.TransitSearch;
 
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 
 public class ViewList1 extends Activity{
 	
@@ -27,6 +24,7 @@ public class ViewList1 extends Activity{
 		back=(Button)findViewById(R.id.button1);
 		textview=(TextView)findViewById(R.id.textView1);
 		
+		@SuppressWarnings("unchecked")
 		ArrayList<String> linelist=(ArrayList<String>)getIntent().getSerializableExtra("list");
 		textview.setText("经过站点"+getIntent().getStringExtra("site")+"的公交线路：");
 		

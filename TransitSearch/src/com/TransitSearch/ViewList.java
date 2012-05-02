@@ -1,17 +1,15 @@
 package com.TransitSearch;
 
 import java.util.ArrayList;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
+
 
 public class ViewList extends Activity{
 	
@@ -27,6 +25,7 @@ public class ViewList extends Activity{
 		back=(Button)findViewById(R.id.button1);
 		busline=(TextView)findViewById(R.id.textView2);
 		
+		@SuppressWarnings("unchecked")
 		ArrayList<String> sitelist=(ArrayList<String>)getIntent().getSerializableExtra("list");
 		busline.setText(getIntent().getStringExtra("busline"));
 		

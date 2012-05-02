@@ -1,37 +1,17 @@
 package com.TransitSearch;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
 import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
-import android.widget.Toast;
-
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.MKAddrInfo;
 import com.baidu.mapapi.MKDrivingRouteResult;
-import com.baidu.mapapi.MKEvent;
-import com.baidu.mapapi.MKPoiInfo;
 import com.baidu.mapapi.MKPoiResult;
-import com.baidu.mapapi.MKRoute;
 import com.baidu.mapapi.MKSearch;
 import com.baidu.mapapi.MKSearchListener;
-import com.baidu.mapapi.MKTransitRoutePlan;
 import com.baidu.mapapi.MKTransitRouteResult;
 import com.baidu.mapapi.MKWalkingRouteResult;
-import com.baidu.mapapi.MapActivity;
-import com.baidu.mapapi.MapView;
-import com.baidu.mapapi.PoiOverlay;
-import com.baidu.mapapi.RouteOverlay;
-import com.baidu.mapapi.TransitOverlay;
 
 public class MapSearch extends MKSearch{
 	private MapSearchListener mapsearchlistener;
@@ -80,7 +60,9 @@ public class MapSearch extends MKSearch{
 				msg.arg2=result.geoPt.getLongitudeE6();
 				msg.obj=result.strAddr;
 			}
-			msg.sendToTarget();
+			
+			//msg.sendToTarget();
+			handler.sendMessage(msg);
 			
 		}
 

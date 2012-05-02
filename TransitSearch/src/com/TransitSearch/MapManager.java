@@ -1,6 +1,5 @@
 package com.TransitSearch;
 
-import com.TransitSearch.*;
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;

@@ -3,17 +3,12 @@ package com.TransitSearch;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-
 import org.apache.http.client.ClientProtocolException;
-
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.GeoPoint;
-import com.baidu.mapapi.MKMapViewListener;
 import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.OverlayItem;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -33,14 +28,14 @@ public class TransitSearchActivity extends MapActivity {
 	private EditText linecontent,sitecontent,citycontent;
 	//数据库对象
 	private MyDataBase mydatabase; 
-	//连接网络获取数据
-	private ObtainData mobtaindata;
-	//获取结果
+	//搜索的站点或者线路结果
 	private ArrayList<String> list;
+	//公交站点覆盖物
 	private ArrayList<OverlayItem> overlaylist;
 	
 	private MapSearch mapsearch;
 	private myhandler handler;
+	private BusStop busstop;
 	
 	static String cityname="南京",transitname;
 	
@@ -84,14 +79,16 @@ public class TransitSearchActivity extends MapActivity {
         mapmanager=((MapManager)getApplication()).getmapmanager();
         mapmanager.start();
         super.initMapActivity(mapmanager);
-        //初始化
-        mobtaindata=new ObtainData();
+
         mapsearch=new MapSearch(mapmanager, TransitSearchActivity.this);
         //取得结果的list
         list=new ArrayList<String>();
         overlaylist=new ArrayList<OverlayItem>();
         handler=new myhandler();
+        busstop=new BusStop(TransitSearchActivity.this);
         mapview.setBuiltInZoomControls(true);
+        
+        
         
         citychange.setOnClickListener(new Button.OnClickListener(){
 
@@ -123,7 +120,8 @@ public class TransitSearchActivity extends MapActivity {
 						url=cursor.getString(index);
 						//display(url);						
 						//设置城市url
-						mobtaindata.setCityURL(url);
+						busstop.setcityurl(url);
+						busstop.setcityname(cityname);
 					}
 					cursor.close();
 				}
@@ -145,7 +143,6 @@ public class TransitSearchActivity extends MapActivity {
 				else{
 					
 					list.clear();
-					mobtaindata.setlist(list);
 					//访问network操作不能再mainUI中，需要另开线程
 					new mythread(1, temp).start();
 				}
@@ -168,7 +165,6 @@ public class TransitSearchActivity extends MapActivity {
 				else{
 					transitname=linecontent.getText().toString();
 					list.clear();
-					mobtaindata.setlist(list);
 					//访问network操作不能再mainUI中，需要另开线程
 					new mythread(0, temp).start();
 				}
@@ -232,8 +228,12 @@ public class TransitSearchActivity extends MapActivity {
 	
 	//访问network操作不能再mainUI中，需要另开线程，该线程获取网络数据
 	private class mythread extends Thread{
+		
+		//1为公交线路搜索，2为公交站点搜索
 		private int type;
+		//公交路线或者公交站点名称
 		private String s;
+		
 		public mythread(int type,String s){
 			this.type=type;
 			this.s=s;
@@ -246,7 +246,7 @@ public class TransitSearchActivity extends MapActivity {
 			case 0:
 				int result=0;
 				try {
-					result=mobtaindata.buslinesearch(s);
+					result=busstop.buslinesearch(s, list);
 				} catch (ClientProtocolException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -254,9 +254,7 @@ public class TransitSearchActivity extends MapActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				/*for (int i=0;i<list.size();i++){
-					Log.v("searchresult", list.get(i));
-				}*/
+
 				if(result==0){
 					Message msg=handler.obtainMessage();
 					msg.what=1000;
@@ -266,13 +264,15 @@ public class TransitSearchActivity extends MapActivity {
 				if(result==1){
 					for (int i=0;i<list.size();i++)
 						Log.v("run result==1", list.get(i));
-					//transitname=linecontent.getText().toString();
-					//重置handler
-					handler.setcount(list.size());
 					//清空原来的overlay
 					overlaylist.clear();
-					mapsearch.getlistener().sethandler(handler);
-					mapsearch.geocode(list.get(0),cityname);
+					
+					try {
+						busstop.getbaidugeo(mapsearch, list, cityname, handler);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				if(result==2){
 					Intent intent=new Intent();
@@ -285,7 +285,7 @@ public class TransitSearchActivity extends MapActivity {
 					
 				}
 				if(result==3){
-					Message msg=handler.obtainMessage();
+					Message msg=handler.obtainMessage();					
 					msg.what=2000;
 					msg.sendToTarget();
 				}
@@ -295,7 +295,7 @@ public class TransitSearchActivity extends MapActivity {
 			case 1:
 				int result1=0;
 				try {
-					result1=mobtaindata.sitesearch(s);
+					result1=busstop.bussitesearch(s, list);
 				} catch (ClientProtocolException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -342,7 +342,7 @@ public class TransitSearchActivity extends MapActivity {
 	}
 	
 	
-    private  class myhandler extends Handler{
+    class myhandler extends Handler{
     	//站点个数
     	private int count;
     	private int i;
@@ -365,10 +365,12 @@ public class TransitSearchActivity extends MapActivity {
     			display("请求数据失败！");
     			return;
     		}
+    		
     		int ierror=msg.what;
     		//搜索成功
     		if(ierror==0){
     			Log.v("handlemsg", msg.arg1+","+msg.arg2+","+msg.obj);
+    			//无搜索结果，则该点坐标设置为与上一个点相同
     			if(msg.arg1==3000){
     				OverlayItem tempitem=overlaylist.get(overlaylist.size()-1);
     				overlaylist.add(new OverlayItem(new GeoPoint(tempitem.getPoint().getLatitudeE6(), tempitem.getPoint().getLongitudeE6()), "bussite", (String)msg.obj));
@@ -379,18 +381,19 @@ public class TransitSearchActivity extends MapActivity {
     			}
     			
     			i++;
-
+    			
+                //若没搜索完则继续搜索
     			if(i<count){ 
     				mapsearch.geocode(list.get(i), cityname);  
     			}
+    			
     			//在地图中显示覆盖物
     			if(i==count){
-    				SiteOverlay siteoverlay=new SiteOverlay(getResources().getDrawable(R.drawable.marker), TransitSearchActivity.this, overlaylist);
-    				mapview.getOverlays().clear();
-    				mapview.getOverlays().add(siteoverlay);
-    				Calculate calculate=new Calculate(overlaylist,TransitSearchActivity.this);
+    				BusMap.drawbussites(getResources().getDrawable(R.drawable.marker), TransitSearchActivity.this, mapview, overlaylist);
+    				
+    				//对坐标进行修正
     				try {
-						calculate.modify();
+						busstop.geomodify(overlaylist);
 					} catch (ClientProtocolException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -398,19 +401,14 @@ public class TransitSearchActivity extends MapActivity {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-    				for (int k=0;k<list.size();k++){
-    					Log.v("newlist:name,geo", overlaylist.get(k).getSnippet()+","+overlaylist.get(k).getPoint().getLatitudeE6()+","+overlaylist.get(k).getPoint().getLongitudeE6());
-    				}
-    				SiteOverlay siteoverlay1=new SiteOverlay(getResources().getDrawable(R.drawable.poi), TransitSearchActivity.this, overlaylist);
-    				mapview.getOverlays().add(siteoverlay1);
-    				mapview.getController().animateTo(siteoverlay1.getItem(0).getPoint());
-    				//mapview.getController().animateTo(new GeoPoint(39924664,116366873));
+    				
+    				BusMap.drawbussites(getResources().getDrawable(R.drawable.poi), TransitSearchActivity.this, mapview, overlaylist);
     			}
     		}
-    		//搜索失败，重新启用市内搜索
+    		
+    		//搜索失败，重新启用市内搜索，搜索附近的建筑物
     		else{
     			Log.v("handlemsg", "searchincity");
-    			//Log.v("searchintcity", list.get(i)+" "+cityname);
     			mapsearch.getlistener().setpoiname(list.get(i));
     			mapsearch.poiSearchInCity(cityname,list.get(i));
     		}
@@ -430,7 +428,6 @@ public class TransitSearchActivity extends MapActivity {
             	transitname=temp;
             	Log.v("request1", transitname);
             	list.clear();
-    			mobtaindata.setlist(list);
     			//访问network操作不能再mainUI中，需要另开线程
     			new mythread(0, temp).start();
         	}
@@ -446,9 +443,7 @@ public class TransitSearchActivity extends MapActivity {
         		int index=bundle.getInt("index");
             	String temp=list.get(index);
             	Log.v("index", Integer.toString(index));
-
             	list.clear();
-    			mobtaindata.setlist(list);
     			//访问network操作不能再mainUI中，需要另开线程
     			new mythread(1, temp).start();
         	}

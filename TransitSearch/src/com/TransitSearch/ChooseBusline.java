@@ -20,6 +20,7 @@ public class ChooseBusline extends Activity{
 		setContentView(R.layout.choosebusline);
 		
 		list=(ListView)findViewById(R.id.listView1);
+		@SuppressWarnings("unchecked")
 		ArrayList<String> linelist=(ArrayList<String>)getIntent().getSerializableExtra("list");
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,R.layout.listitem,linelist);  
 	    list.setAdapter(adapter); 
