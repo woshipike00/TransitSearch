@@ -31,7 +31,8 @@ public final class R {
         public static final int mapview=0x7f05000b;
         public static final int relativeLayout1=0x7f050003;
         public static final int textView1=0x7f050002;
-        public static final int textView2=0x7f05000c;
+        public static final int textView2=0x7f05000d;
+        public static final int toggleButton1=0x7f05000c;
     }
     public static final class layout {
         public static final int choosebusline=0x7f030000;

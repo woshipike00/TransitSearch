@@ -101,6 +101,12 @@ public class MapSearch extends MKSearch{
 				}
 				
 			}
+			else{
+				msg.what=0;
+				msg.arg1=3000;
+				msg.obj=poiname;
+			}
+			
 			msg.sendToTarget();
 			
 			

@@ -8,7 +8,6 @@ import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapView;
-import com.baidu.mapapi.OverlayItem;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -19,27 +18,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 public class TransitSearchActivity extends MapActivity {
     /** Called when the activity is first created. */
 	private BMapManager mapmanager;
 	private MapView mapview;
+	private BusMap busmap;
 	private Button citychange,busline,bussite,viewlist;
 	private EditText linecontent,sitecontent,citycontent;
+	private ToggleButton togglebutton;
 	//数据库对象
 	private MyDataBase mydatabase; 
-	//搜索的站点或者线路结果
-	private ArrayList<String> list;
-	//公交站点覆盖物
-	private ArrayList<OverlayItem> overlaylist;
-	
 	private MapSearch mapsearch;
 	private myhandler handler;
-	private BusStop busstop;
-	
-	static String cityname="南京",transitname;
-	
-	static int baiduweights=1,googleweights=1,gaodeweights=1;
+	//搜索得到的公交站点列表
+	private ArrayList<BusStop> busstoplist;
+	private ArrayList<BusStop> busstoplist2;
+	//搜索得到的公交线路列表
+	private ArrayList<BusLine> buslinelist;	
+	private String cityname="南京",cityurl="http://nanjing.8684.cn",transitname;	
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -47,8 +45,7 @@ public class TransitSearchActivity extends MapActivity {
         setContentView(R.layout.main);
         //初始化并打开数据库
         mydatabase=((MapManager)getApplication()).getdatabase();
-        //mydatabase.open();
-        //Log.v("database", Integer.toString(mydatabase.fetchalldata().getCount()));
+
         //若数据库为空则读入数据
         Cursor tempcursor=mydatabase.fetchalldata();
         if(tempcursor.getCount()==0){
@@ -56,10 +53,8 @@ public class TransitSearchActivity extends MapActivity {
         		Log.v("oncreate", "readdata");
 				mydatabase.readindata(TransitSearchActivity.this);
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
         }
@@ -74,6 +69,7 @@ public class TransitSearchActivity extends MapActivity {
         citycontent=(EditText)findViewById(R.id.editText1);
         linecontent=(EditText)findViewById(R.id.editText2);
         sitecontent=(EditText)findViewById(R.id.editText3);
+        togglebutton=(ToggleButton)findViewById(R.id.toggleButton1);
         
         //获取全局的mapmanager并开始
         mapmanager=((MapManager)getApplication()).getmapmanager();
@@ -81,12 +77,12 @@ public class TransitSearchActivity extends MapActivity {
         super.initMapActivity(mapmanager);
 
         mapsearch=new MapSearch(mapmanager, TransitSearchActivity.this);
-        //取得结果的list
-        list=new ArrayList<String>();
-        overlaylist=new ArrayList<OverlayItem>();
         handler=new myhandler();
-        busstop=new BusStop(TransitSearchActivity.this);
+        busstoplist=new ArrayList<BusStop>();
+        busstoplist2=new ArrayList<BusStop>();
+        buslinelist=new ArrayList<BusLine>();
         mapview.setBuiltInZoomControls(true);
+        busmap=new BusMap(mapview);
         
         
         
@@ -95,7 +91,6 @@ public class TransitSearchActivity extends MapActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				String temp=citycontent.getText().toString().trim();
-				String url=null;
 				if(temp.length()==0){
 					display("请输入城市");
 				}
@@ -117,11 +112,10 @@ public class TransitSearchActivity extends MapActivity {
 					else{
 						cityname=temp;
 						int index=cursor.getColumnIndex("url");
-						url=cursor.getString(index);
+						cityurl=cursor.getString(index);
 						//display(url);						
 						//设置城市url
-						busstop.setcityurl(url);
-						busstop.setcityname(cityname);
+						display("切换到城市： "+cityname);
 					}
 					cursor.close();
 				}
@@ -142,7 +136,7 @@ public class TransitSearchActivity extends MapActivity {
 				}
 				else{
 					
-					list.clear();
+					buslinelist.clear();
 					//访问network操作不能再mainUI中，需要另开线程
 					new mythread(1, temp).start();
 				}
@@ -164,7 +158,8 @@ public class TransitSearchActivity extends MapActivity {
 				}
 				else{
 					transitname=linecontent.getText().toString();
-					list.clear();
+					busstoplist.clear();
+					buslinelist.clear();
 					//访问network操作不能再mainUI中，需要另开线程
 					new mythread(0, temp).start();
 				}
@@ -185,12 +180,37 @@ public class TransitSearchActivity extends MapActivity {
 				intent.setClass(TransitSearchActivity.this, ViewList.class);
 				Bundle bundle=new Bundle();
 				//传送线路列表供用户选择
+				ArrayList<String> list=new ArrayList<String>();
+				if(buslinelist.size()==0)
+				    for (int i=0;i<busstoplist.size();i++)
+					    list.add(busstoplist.get(i).getname());
+				if(busstoplist.size()==0)
+					for (int i=0;i<buslinelist.size();i++)
+					    list.add(buslinelist.get(i).getname());
 				bundle.putSerializable("list", list);
 				bundle.putString("busline", transitname);
 				intent.putExtras(bundle);
 				startActivityForResult(intent, 2);
 				
 	
+			}
+        	
+        });
+        
+        togglebutton.setOnClickListener(new ToggleButton.OnClickListener(){
+
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(togglebutton.isChecked()){
+					busmap.clear();
+    				busmap.drawbussites(getResources().getDrawable(R.drawable.poi), TransitSearchActivity.this, busstoplist2);
+				}
+					
+				else{
+					busmap.clear();
+    				busmap.drawbussites(getResources().getDrawable(R.drawable.poi), TransitSearchActivity.this, busstoplist);
+				}
+					
 			}
         	
         });
@@ -246,7 +266,8 @@ public class TransitSearchActivity extends MapActivity {
 			case 0:
 				int result=0;
 				try {
-					result=busstop.buslinesearch(s, list);
+					BusLine busline=new BusLine(TransitSearchActivity.this, s, new City(cityname, cityurl));
+					result=busline.buslinesearch(busstoplist, buslinelist);
 				} catch (ClientProtocolException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -262,13 +283,11 @@ public class TransitSearchActivity extends MapActivity {
 				}
 					
 				if(result==1){
-					for (int i=0;i<list.size();i++)
-						Log.v("run result==1", list.get(i));
-					//清空原来的overlay
-					overlaylist.clear();
+					//for (int i=0;i<list.size();i++)
+						//Log.v("run result==1", list.get(i));
 					
 					try {
-						busstop.getbaidugeo(mapsearch, list, cityname, handler);
+						BusStop.getbaidugeo(mapsearch, busstoplist, handler);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -279,6 +298,9 @@ public class TransitSearchActivity extends MapActivity {
 					intent.setClass(TransitSearchActivity.this, ChooseBusline.class);
 					Bundle bundle=new Bundle();
 					//传送线路列表供用户选择
+					ArrayList<String> list=new ArrayList<String>();
+					for (int i=0;i<buslinelist.size();i++)
+						list.add(buslinelist.get(i).getname());
 					bundle.putSerializable("list", list);
 					intent.putExtras(bundle);
 					startActivityForResult(intent, 1);
@@ -295,7 +317,8 @@ public class TransitSearchActivity extends MapActivity {
 			case 1:
 				int result1=0;
 				try {
-					result1=busstop.bussitesearch(s, list);
+					BusStop busstop=new BusStop(TransitSearchActivity.this, s, new City(cityname, cityurl));
+					result1=busstop.bussitesearch(busstoplist, buslinelist);
 				} catch (ClientProtocolException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -314,6 +337,9 @@ public class TransitSearchActivity extends MapActivity {
 					intent.setClass(TransitSearchActivity.this, ViewList1.class);
 					Bundle bundle=new Bundle();
 					//传送线路列表
+					ArrayList<String> list=new ArrayList<String>();
+					for (int i=0;i<buslinelist.size();i++)
+						list.add(buslinelist.get(i).getname());
 					bundle.putSerializable("list", list);
 					bundle.putString("site", s);
 					intent.putExtras(bundle);
@@ -325,6 +351,10 @@ public class TransitSearchActivity extends MapActivity {
 					intent.setClass(TransitSearchActivity.this, ChooseSite.class);
 					Bundle bundle=new Bundle();
 					//传送线路列表供用户选择
+					ArrayList<String> list=new ArrayList<String>();
+					for (int i=0;i<busstoplist.size();i++)
+						list.add(busstoplist.get(i).getname());
+					
 					bundle.putSerializable("list", list);
 					intent.putExtras(bundle);
 					startActivityForResult(intent, 4);
@@ -356,7 +386,8 @@ public class TransitSearchActivity extends MapActivity {
     		i=0;
     	}
     	
-    	public void handleMessage(Message msg){
+
+		public void handleMessage(Message msg){
     		if(msg.what==1000){
     			display("无搜索结果！");
     			return;
@@ -370,47 +401,55 @@ public class TransitSearchActivity extends MapActivity {
     		//搜索成功
     		if(ierror==0){
     			Log.v("handlemsg", msg.arg1+","+msg.arg2+","+msg.obj);
-    			//无搜索结果，则该点坐标设置为与上一个点相同
+    			//无搜索结果，则该点坐标设置为与上一个点相同或默认值
     			if(msg.arg1==3000){
-    				OverlayItem tempitem=overlaylist.get(overlaylist.size()-1);
-    				overlaylist.add(new OverlayItem(new GeoPoint(tempitem.getPoint().getLatitudeE6(), tempitem.getPoint().getLongitudeE6()), "bussite", (String)msg.obj));
+    				if(i==0)
+    					busstoplist.get(i).setgeo(new GeoPoint(32000000, 118000000));
+    				else{
+    					GeoPoint geo=busstoplist.get(i-1).getgeo();
+        				busstoplist.get(i).setgeo(new GeoPoint(geo.getLatitudeE6(), geo.getLongitudeE6()));
+    				}
+    				
     			}
     			
     			else{
-    				overlaylist.add(new OverlayItem(new GeoPoint(msg.arg1, msg.arg2), "bussite", (String)msg.obj));
+    				busstoplist.get(i).setgeo(new GeoPoint(msg.arg1, msg.arg2));
     			}
     			
     			i++;
     			
                 //若没搜索完则继续搜索
     			if(i<count){ 
-    				mapsearch.geocode(list.get(i), cityname);  
+    				mapsearch.geocode(busstoplist.get(i).getname(), busstoplist.get(i).getcity().getcityname());  
     			}
     			
     			//在地图中显示覆盖物
     			if(i==count){
-    				BusMap.drawbussites(getResources().getDrawable(R.drawable.marker), TransitSearchActivity.this, mapview, overlaylist);
-    				
+    				//busmap.clear();
+    				//busmap.drawbussites(getResources().getDrawable(R.drawable.marker), TransitSearchActivity.this, busstoplist);
+    				busstoplist2.clear();
+    				for (int m=0;m<busstoplist.size();m++)
+    					busstoplist2.add(busstoplist.get(m).clone());
     				//对坐标进行修正
     				try {
-						busstop.geomodify(overlaylist);
-					} catch (ClientProtocolException e) {
+						GeoModify.geomodify(busstoplist2);
+					} catch (ClientProtocolException e) { 
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-    				
-    				BusMap.drawbussites(getResources().getDrawable(R.drawable.poi), TransitSearchActivity.this, mapview, overlaylist);
+    				busmap.clear();
+    				busmap.drawbussites(getResources().getDrawable(R.drawable.poi), TransitSearchActivity.this, busstoplist);
     			}
     		}
     		
     		//搜索失败，重新启用市内搜索，搜索附近的建筑物
     		else{
     			Log.v("handlemsg", "searchincity");
-    			mapsearch.getlistener().setpoiname(list.get(i));
-    			mapsearch.poiSearchInCity(cityname,list.get(i));
+    			mapsearch.getlistener().setpoiname(busstoplist.get(i).getname());
+    			mapsearch.poiSearchInCity(busstoplist.get(i).getcity().getcityname(),busstoplist.get(i).getname());
     		}
     	}
     }
@@ -423,11 +462,12 @@ public class TransitSearchActivity extends MapActivity {
         	if(requestCode==1){
         		Bundle bundle=intent.getExtras();
         		int index=bundle.getInt("index");
-            	String temp=list.get(index);
+            	String temp=buslinelist.get(index).getname();
             	Log.v("index", Integer.toString(index));
             	transitname=temp;
             	Log.v("request1", transitname);
-            	list.clear();
+            	busstoplist.clear();
+            	buslinelist.clear();
     			//访问network操作不能再mainUI中，需要另开线程
     			new mythread(0, temp).start();
         	}
@@ -441,9 +481,10 @@ public class TransitSearchActivity extends MapActivity {
         	if(requestCode==4){
         		Bundle bundle=intent.getExtras();
         		int index=bundle.getInt("index");
-            	String temp=list.get(index);
+            	String temp=busstoplist.get(index).getname();
             	Log.v("index", Integer.toString(index));
-            	list.clear();
+            	busstoplist.clear();
+            	buslinelist.clear();
     			//访问network操作不能再mainUI中，需要另开线程
     			new mythread(1, temp).start();
         	}

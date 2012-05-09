@@ -22,8 +22,8 @@ public class DataTransport {
 	    private static String URL2="&sensor=false";
 		
 		
-		public DataTransport(){
-			cityURL="http://nanjing.8684.cn";
+		public DataTransport(City city){
+			cityURL=city.getcityurl();
 		}
 		
 		public void setCityURL(String url){
